@@ -26,49 +26,24 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import Combine
+import SwiftUI
 
-class TaskStore: ObservableObject {
-    @Published var prioritizedTasks =  [
-        PrioritizedTasks(
-            priority: .high,
-            names: [
-                "Read a book",
-                "Make a push ups",
-                "Complete ios course",
-                "Play a football"
-        ]),
-        PrioritizedTasks(
-            priority: .medium,
-            names: [
-                "Play a football",
-                "Call to brother"
-        ]),
-        PrioritizedTasks(
-            priority: .low,
-            names: [
-                "Pay credit"
-        ]),
-        PrioritizedTasks(
-            priority: .no,
-            names: [
-                "Open olx.kz",
-                "Finish watching spider man",
-                "Wash your car",
-                "Drink a water"
-        ])
-    ]
-    func getIndex(for priority: Task.Priority) -> Int {
-        prioritizedTasks.firstIndex {
-            $0.priority == priority
-            }!
-    }
-}
- 
-private extension TaskStore.PrioritizedTasks {
-    init(priority: Task.Priority, names: [String]) {
-        self.init(
-            priority: priority,
-            tasks: names.map { Task(name: $0, completed: false) })
+struct SectionView: View {
+    @Binding var prioritizedTasks: TaskStore.PrioritizedTasks
+    var body: some View {
+        Section(
+            header: Text("\(prioritizedTasks.priority.rawValue.capitalized) Priority")
+        )
+        {
+        ForEach(prioritizedTasks.tasks) { index in
+                RowView(task: self.$prioritizedTasks.tasks[index] )
+            }
+        .onMove { sourceIndeces, destinationIndex in
+            self.prioritizedTasks.tasks.move(fromOffsets: sourceIndeces, toOffset: destinationIndex)
+        }
+        .onDelete { IndexSet in
+            self.prioritizedTasks.tasks.remove(atOffsets: IndexSet)
+            }
+        } 
     }
 }

@@ -26,49 +26,20 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import Combine
+import SwiftUI
 
-class TaskStore: ObservableObject {
-    @Published var prioritizedTasks =  [
-        PrioritizedTasks(
-            priority: .high,
-            names: [
-                "Read a book",
-                "Make a push ups",
-                "Complete ios course",
-                "Play a football"
-        ]),
-        PrioritizedTasks(
-            priority: .medium,
-            names: [
-                "Play a football",
-                "Call to brother"
-        ]),
-        PrioritizedTasks(
-            priority: .low,
-            names: [
-                "Pay credit"
-        ]),
-        PrioritizedTasks(
-            priority: .no,
-            names: [
-                "Open olx.kz",
-                "Finish watching spider man",
-                "Wash your car",
-                "Drink a water"
-        ])
-    ]
-    func getIndex(for priority: Task.Priority) -> Int {
-        prioritizedTasks.firstIndex {
-            $0.priority == priority
-            }!
-    }
+struct TaskEditingView: View {
+    
+    @Binding var task: Task
+    var body: some View {
+        Form {
+            TextField("Name", text: $task.name)
+            Toggle("Completed", isOn: $task.completed )
+        }    }
 }
- 
-private extension TaskStore.PrioritizedTasks {
-    init(priority: Task.Priority, names: [String]) {
-        self.init(
-            priority: priority,
-            tasks: names.map { Task(name: $0, completed: false) })
+
+struct TaskEditingView_Previews: PreviewProvider {
+    static var previews: some View {
+        TaskEditingView(task: .constant(Task(name: "To Do", completed: false)))
     }
 }
